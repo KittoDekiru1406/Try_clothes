@@ -7,7 +7,7 @@ from evaluate import execute
 from pose_parser import pose_parse
 
 st.title("Virtual Try ON")
-
+#ảnh có sẵn để chọn
 cloth1 = Image.open('./Database/val/cloth/002337_1.jpg')
 cloth2 = Image.open('./Database/val/cloth/001401_1.jpg')
 cloth3 = Image.open('./Database/val/cloth/003086_1.jpg')
@@ -16,6 +16,7 @@ st.sidebar.image(cloth1, caption="002337", width=100, use_column_width=False)
 st.sidebar.image(cloth2, caption="002599", width=100, use_column_width=False)
 st.sidebar.image(cloth3, caption="003086", width=100, use_column_width=False)
 
+#Tải ảnh người dùng lên
 uploaded_person = st.file_uploader("Upload a Photo", type="jpg")
 user_input = st.text_input("Enter the User Name... eg sourav")
 selected = st.selectbox('Select the Item Id:', [
@@ -33,6 +34,7 @@ if uploaded_person is not None and user_input is not '' and selected is not '':
     person.save("./Database/val/person/"+user_input+".jpg")
     progress_bar = st.progress(0)
     st.write("Generating Mask and Pose Pairs")
+    # Mấy phần trên lưu ảnh thôi, 2 dòng dưới đây xử lí, tạo pose với human parsing
     pose_parse(user_input)
     execute()
     for percent_complete in range(100):
@@ -44,6 +46,7 @@ if st.button('Execute'):
     f = open("./Database/val_pairs.txt" , "w")    
     f.write(user_input+".jpg "+selected+"_1.jpg")
     f.close()
+    # Chỗ này chạy model này, còn lại ở dưới chỉ là chỉnh output đầu ra thôi
     predict()
     from PIL import Image
     im = Image.open("./output/second/TOM/val/" + selected + "_1.jpg")
