@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from pathlib import Path
-
+from fastapi.responses import HTMLResponse
 
 app = FastAPI()
 
@@ -15,6 +15,18 @@ async def get_image():
     return FileResponse(image_path)
 
 
+@app.get("/items/", response_class=HTMLResponse)
+async def read_items():
+    return """
+    <html>
+        <head>
+            <title>Some HTML in here</title>
+        </head>
+        <body>
+            <h1>Look ma! HTML!</h1>
+        </body>
+    </html>
+    """
 # @app.get("/get_image")
 # async def get_image():
 #     image_path = Path("gfglogo.jpg")
