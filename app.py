@@ -1,5 +1,5 @@
 import streamlit as st
-from PIL import Image
+from PIL import Image, ImageFilter
 from script import predict
 import time
 
@@ -58,8 +58,11 @@ if st.button('Execute'):
 # # Cropped image of above dimension  
 # # (It will not change orginal image)  
     im1 = im.crop((left, top, right, bottom)) 
-    newsize = (100, 150) 
+    newsize = (256, 256) 
     im1 = im1.resize(newsize) 
+
+    # Sử dụng bộ lọc sắc nét
+    im1 = im1.filter(ImageFilter.SHARPEN)
 # # Shows the image in image viewer  
     im1.save("./output/second/TOM/val/" + selected + "_1.jpg")
     execute_bar = st.progress(0)

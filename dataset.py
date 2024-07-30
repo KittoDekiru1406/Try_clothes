@@ -7,6 +7,7 @@ from PIL import ImageDraw
 import torch
 from torch.utils.data import Dataset, DataLoader
 import torchvision.transforms as transforms
+import torch.nn.functional as F
 
 class DatasetBase(Dataset):
     """Base dataset for VITON-GAN.
@@ -86,13 +87,20 @@ class DatasetBase(Dataset):
             feature_pose_tensor[i] = one_map[0]
         pose_tensor = self.transform(pose_im) # [-1,1]
         return feature_pose_tensor, pose_tensor
+    
+    def resize_tensor(self, input_tensor, size):
+        input_tensor = input_tensor.unsqueeze(0)  # Thêm một chiều batch
+        resized_tensor = F.interpolate(input_tensor, size=size, mode='bilinear', align_corners=False)
+        resized_tensor = resized_tensor.squeeze(0)  # Loại bỏ chiều batch
+        return resized_tensor
 
     def _get_item_base(self, index):
         # Person
         person_name = self.person_names[index] 
         person_im = Image.open(os.path.join(self.data_path, 'person', person_name))
         person_tensor = self.transform(person_im) # [-1,1]
-
+        person_tensor = self.resize_tensor(person_tensor, (256, 192))
+        print(person_tensor.shape)
         # Person-parse
         parse_name = person_name.replace('.jpg', '.png')
         person_parse = Image.open(os.path.join(self.data_path, 'person-parse', parse_name))
@@ -101,14 +109,19 @@ class DatasetBase(Dataset):
         shape_im = Image.fromarray((shape_mask*255).astype(np.uint8))
         feature_shape_tensor = self.transform(self._downsample(shape_im)) # [-1,1]
         head_mask_tensor = torch.from_numpy(head_mask) # [0,1]
+        print(head_mask_tensor.shape)
         feature_head_tensor = person_tensor * head_mask_tensor - (1 - head_mask_tensor) # [-1,1], fill -1 for other parts
         cloth_mask_tensor = torch.from_numpy(cloth_mask) # [0,1]
         cloth_parse_tensor = person_tensor * cloth_mask_tensor + (1 - cloth_mask_tensor) # [-1,1], fill 1 for other parts
         body_mask_tensor = torch.from_numpy(body_mask).unsqueeze(0) # Tensor [0,1]
         
+        print(feature_shape_tensor.shape)
+        print(feature_head_tensor.shape)
         # Pose keypoints
         pose_name = person_name.replace('.jpg', '_keypoints.json')
         feature_pose_tensor, pose_tensor = self._load_pose(pose_name)
+        print(feature_pose_tensor.shape)
+
         # Cloth-agnostic representation
         feature_tensor = torch.cat([feature_shape_tensor, feature_head_tensor, feature_pose_tensor], 0) 
 

@@ -110,7 +110,7 @@ class SCHPDataset(data.Dataset):
         
         input = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
         # input = self.transform(input)
-        input = input.resize((473, 473), Image.LANCZOS)
+        input = input.resize((192, 256), Image.LANCZOS)
     
         # Áp dụng các phép biến đổi khác (nếu có)
         input = self.transform(input)

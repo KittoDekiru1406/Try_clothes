@@ -1,5 +1,7 @@
 import cv2
 import numpy as np
+from PIL import Image
+
 
 def pose_parse(person_name):
     MODE = "COCO"
@@ -9,6 +11,11 @@ def pose_parse(person_name):
     POSE_PAIRS = [ [1,0],[1,2],[1,5],[2,3],[3,4],[5,6],[6,7],[1,8],[8,9],[9,10],[1,11],[11,12],[12,13],[0,14],[0,15],[14,16],[15,17]]
 
     frame = cv2.imread("./Database/val/person/"+person_name+".jpg")
+    
+    frame = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+    # input = self.transform(input)
+    frame = frame.resize((192, 256), Image.LANCZOS)
+    frame = np.array(frame)
     frameWidth = frame.shape[1]
     frameHeight = frame.shape[0]
     net = cv2.dnn.readNetFromCaffe(protoFile, weightsFile)
