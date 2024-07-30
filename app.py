@@ -1,3 +1,5 @@
+from fastapi import FastAPI, File, UploadFile
+from io import StringIO
 import streamlit as st
 from PIL import Image, ImageFilter
 from script import predict
@@ -16,8 +18,11 @@ st.sidebar.image(cloth1, caption="002337", width=100, use_column_width=False)
 st.sidebar.image(cloth2, caption="002599", width=100, use_column_width=False)
 st.sidebar.image(cloth3, caption="003086", width=100, use_column_width=False)
 
+
 # Tải ảnh người dùng lên (Chỗ này cần sửa này Cường ơi vì đang tải ảnh nên qua thằng treamlit)
-uploaded_person = st.file_uploader("Upload a Photo", type="jpg")
+uploaded_person = st.file_uploader(
+    "Upload a Photo", type=["png", "jpg", "jpeg"])
+print("------uploaded_person--------", uploaded_person)
 user_input = st.text_input("Enter the User Name... eg sourav")
 selected = st.selectbox('Select the Item Id:', [
                         '', '002337', '002599', '003086'], format_func=lambda x: 'Select an option' if x == '' else x)
