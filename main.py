@@ -1,38 +1,93 @@
-from fastapi import FastAPI
-from fastapi.responses import FileResponse
-from pathlib import Path
-from fastapi.responses import HTMLResponse
+# from fastapi import FastAPI, Request
+# from fastapi.responses import FileResponse
+# from pathlib import Path
+# from fastapi.responses import HTMLResponse
+# from fastapi.staticfiles import StaticFiles
+# from fastapi.templating import Jinja2Templates
+# from starlette.responses import FileResponse
+# app = FastAPI()
+# # app.mount("/static", StaticFiles(directory="static"), name="static")
+# # app.mount("/", StaticFiles(directory="static", html=True), name="static")
 
-app = FastAPI()
-
-
-@app.get("/get_image")
-async def get_image():
-    image_path = Path(
-        "./Outputs/TOM/002599_1.jpg")
-    if not image_path.is_file():
-        return {"error": "Image not found on the server"}
-    return FileResponse(image_path)
+# templates = Jinja2Templates(directory="templates")
 
 
-@app.get("/items/", response_class=HTMLResponse)
-async def read_items():
-    return """
-    <html>
-        <head>
-            <title>Some HTML in here</title>
-        </head>
-        <body>
-            <h1>Look ma! HTML!</h1>
-        </body>
-    </html>
-    """
+# @app.get("/", response_class=HTMLResponse)
+# async def read_items():
+#     html_content = """
+#     <html>
+#         <head>
+#             <title>Some HTML in here</title>
+
+#         </head>
+#         <body>
+#             <h1>Look ma! HTML!</h1>
+#             <img
+#                 src="https://img-cdn.pixlr.com/image-generator/history/65bb506dcb310754719cf81f/ede935de-1138-4f66-8ed7-44bd16efc709/medium.webp"
+#                 alt=""
+#             />
+#         </body>
+#     </html>
+#     """
+#     return HTMLResponse(content=html_content, status_code=200)
+
+
 # @app.get("/get_image")
 # async def get_image():
-#     image_path = Path("gfglogo.jpg")
+#     image_path = Path(
+#         "./Outputs/TOM/002599_1.jpg")
 #     if not image_path.is_file():
 #         return {"error": "Image not found on the server"}
 #     return FileResponse(image_path)
 
 
-# uvicorn main:app --reload
+# @app.get("/items/", response_class=HTMLResponse)
+# async def read_items():
+#     html_content = """
+#     <html>
+#         <head>
+#             <title>Some HTML in here</title>
+#         </head>
+#         <body>
+#             <h1>Look ma! HTML!</h1>
+#         </body>
+#     </html>
+#     """
+#     return HTMLResponse(content=html_content, status_code=200)
+
+# # @app.get("/get_image")
+# # async def get_image():
+# #     image_path = Path("gfglogo.jpg")
+# #     if not image_path.is_file():
+# #         return {"error": "Image not found on the server"}
+# #     return FileResponse(image_path)
+
+
+# @app.get("/items/{id}", response_class=HTMLResponse)
+# async def read_item(request: Request, id: str):
+#     return templates.TemplateResponse(
+#         request=request, name="index.html", context={"id": id}
+#     )
+
+# # uvicorn main:app --reload
+
+
+from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel
+
+app = FastAPI()
+
+
+class Item(BaseModel):
+    image: str
+
+
+@app.post("/items")
+async def create_item(item: Item):
+    print(item)
+    return item
+
+
+app.mount("/api", app)
+app.mount("/", StaticFiles(directory="ui", html=True), name="ui")
