@@ -71,10 +71,12 @@
 
 # # uvicorn main:app --reload
 
-
+# uvicorn.run("my_fastapi_server:app", host='0.0.0.0', port=8127, workers=2)
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
+from app import convertBase64
+import uvicorn
 
 app = FastAPI()
 
@@ -83,7 +85,12 @@ class Item(BaseModel):
     image: str
 
 
-@app.post("/items")
+@app.get('/')
+async def get_image():
+    return convertBase64()
+
+
+@app.post("/")
 async def create_item(item: Item):
     print(item)
     return item
@@ -91,3 +98,7 @@ async def create_item(item: Item):
 
 app.mount("/api", app)
 app.mount("/", StaticFiles(directory="ui", html=True), name="ui")
+
+if __name__ == "__main__":
+    uvicorn.run("__main__:app", host="127.0.0.1",
+                port=8000, reload=True, workers=2)

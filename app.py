@@ -1,10 +1,14 @@
+import io
+from PIL import Image
+from io import BytesIO
+import base64
 from fastapi import FastAPI, File, UploadFile
 from io import StringIO
 import streamlit as st
 from PIL import Image, ImageFilter
 from script import predict
 import time
-
+import pickle
 from evaluate import execute
 from pose_parser import pose_parse
 
@@ -29,6 +33,8 @@ selected = st.selectbox('Select the Item Id:', [
 
 
 if uploaded_person is not None and user_input is not '' and selected is not '':
+    with open('data.pkl', 'wb') as file:
+        pickle.dump(selected, file)
     person = Image.open(uploaded_person)
     st.image(person, caption=user_input, width=100, use_column_width=False)
     st.write("Saving Image")
@@ -47,14 +53,27 @@ if uploaded_person is not None and user_input is not '' and selected is not '':
         progress_bar.progress(percent_complete + 1)
     st.write("Please click the Click Button after Pose pairs and Masks are generated")
 
+
+with open('data.pkl', 'rb') as file:
+    your_variable = pickle.load(file)
+    print("your_variable", your_variable)
+
+
+def convertBase64():
+    with open("./output/second/TOM/val/" + your_variable + "_1.jpg", 'rb') as image_file:
+        encoded_string = base64.b64encode(image_file.read())
+    print("encoded_string", encoded_string)
+    return encoded_string
+
+
 if st.button('Execute'):
     f = open("./Database/val_pairs.txt", "w")
-    f.write(user_input+".jpg "+selected+"_1.jpg")
+    f.write(user_input+".jpg "+your_variable+"_1.jpg")
     f.close()
     # Chỗ này chạy model này, còn lại ở dưới chỉ là chỉnh output đầu ra thôi
     predict()
     from PIL import Image
-    im = Image.open("./output/second/TOM/val/" + selected + "_1.jpg")
+    im = Image.open("./output/second/TOM/val/" + your_variable + "_1.jpg")
     width, height = im.size
 
 # # Setting the points for cropped image
@@ -72,10 +91,19 @@ if st.button('Execute'):
     # Sử dụng bộ lọc sắc nét
     im1 = im1.filter(ImageFilter.SHARPEN)
 # # Shows the image in image viewer
-    im1.save("./output/second/TOM/val/" + selected + "_1.jpg")
+    im1.save("./output/second/TOM/val/" + your_variable + "_1.jpg")
     execute_bar = st.progress(0)
     for percent_complete in range(100):
         time.sleep(0.08)
         execute_bar.progress(percent_complete + 1)
-    result = Image.open("./output/second/TOM/val/" + selected + "_1.jpg")
+    result = Image.open("./output/second/TOM/val/" + your_variable + "_1.jpg")
+
     st.image(result, caption="Result", width=200, use_column_width=False)
+
+    base64_string = convertBase64()
+    print("base64_string", base64_string)
+    decoded_string = io.BytesIO(base64.b64decode(base64_string))
+    img = Image.open(decoded_string)
+    img.show()
+
+# streamlit run app.py
