@@ -85,19 +85,19 @@ class Item(BaseModel):
     image: str
 
 
-@app.get('/')
-async def get_image():
-    return convertBase64()
-
-
-@app.post("/")
+@app.post('/')
 async def create_item(item: Item):
     print(item)
     return item
 
 
+@app.get('/result')
+async def get_image():
+    return convertBase64()
+
 app.mount("/api", app)
 app.mount("/", StaticFiles(directory="ui", html=True), name="ui")
+
 
 if __name__ == "__main__":
     uvicorn.run("__main__:app", host="127.0.0.1",
