@@ -3,7 +3,7 @@ from PIL import Image, ImageFilter
 from try_on_clothes.script import predict
 import time
 import download_pre_trained
-from try_on_clothes.utils.upscale import up_scale_x3_normal_fast
+# from try_on_clothes.utils.upscale import up_scale_x3_normal_fast
 from human_parsing.evaluate_human_parsing import execute
 from pose_map.pose_parser import pose_parse
 from cloth_mask.evaluate_mask import execute_mask
@@ -74,7 +74,7 @@ if uploaded_person is not None:
             im = Image.open("./Database/val/tryon-person/" + selected + "_1.jpg")
             im = im.filter(ImageFilter.SHARPEN)
             im.save("./Database/val/tryon-person/" + selected + "_1.jpg")
-            result = up_scale_x3_normal_fast("./Database/val/tryon-person/" + selected + "_1.jpg", "./Database/val/tryon-person/" + selected + "_1.jpg")
+            # result = up_scale_x3_normal_fast("./Database/val/tryon-person/" + selected + "_1.jpg", "./Database/val/tryon-person/" + selected + "_1.jpg")
             result = Image.open("./Database/val/tryon-person/" + selected + "_1.jpg")
             st.image(result, caption="Result", width=200, use_column_width=False)
             st.write(f"The duration of the process is {time.time()- start}")
@@ -116,7 +116,7 @@ if uploaded_person is not None:
             im = Image.open("./Database/val/tryon-person/" + selected + "_1.jpg")
             im = im.filter(ImageFilter.SHARPEN)
             im.save("./Database/val/tryon-person/" + selected + "_1.jpg")
-            result = up_scale_x3_normal_fast("./Database/val/tryon-person/" + selected + "_1.jpg", "./Database/val/tryon-person/" + selected + "_1.jpg")
+            # result = up_scale_x3_normal_fast("./Database/val/tryon-person/" + selected + "_1.jpg", "./Database/val/tryon-person/" + selected + "_1.jpg")
             result = Image.open("./Database/val/tryon-person/" + selected + "_1.jpg")
             st.image(result, caption="Result", width=200, use_column_width=False)
             st.write(f"The duration of the process is {time.time()- start}")
