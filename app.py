@@ -55,6 +55,7 @@ if uploaded_person is not None:
         selected = "new_cloth"
         if user_input and uploaded_cloth:
             person = Image.open(uploaded_person)
+            person = person.convert('RGB')
             st.image(person, caption=user_input, width=100, use_column_width=False)
             bar = st.progress(0)
             person.save("./Database/val/person/" + user_input + ".jpg")
@@ -104,6 +105,7 @@ if uploaded_person is not None:
 
         if user_input and selected:
             person = Image.open(uploaded_person)
+            person = person.convert('RGB')
             st.image(person, caption=user_input, width=100, use_column_width=False)
             bar = st.progress(0)
             person.save("./Database/val/person/" + user_input + ".jpg")
